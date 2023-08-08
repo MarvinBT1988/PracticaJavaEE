@@ -18,7 +18,7 @@ import java.sql.PreparedStatement;
  *
  * @author Alumno
  */
-@WebServlet(name = "UserServlet", urlPatterns = {"/UserServlet"})
+@WebServlet(name = "UserServlet", urlPatterns = {"/User"})
 public class UserServlet extends HttpServlet {
  protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -26,9 +26,9 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
         
         // Configuración de la base de datos
-        String jdbcUrl = "jdbc:sqlserver://localhost:1433;databaseName=YourDatabaseName";
-        String dbUser = "YourUsername";
-        String dbPassword = "YourPassword";
+        String jdbcUrl = "jdbc:sqlserver://localhost:1433;databaseName=test;loginTimeout=30;encrypt=false;trustServerCertificate=false";
+        String dbUser = "docentejdk17";
+        String dbPassword = "12345";
         
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
