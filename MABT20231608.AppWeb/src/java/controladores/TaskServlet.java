@@ -21,7 +21,7 @@ import utils.Utilidad;
  *
  * @author Alumno
  */
-@WebServlet(name = "TaskServlet", urlPatterns = {"/TaskServlet"})
+@WebServlet(name = "TaskServlet", urlPatterns = {"/Task"})
 public class TaskServlet extends HttpServlet {
 
     private Task obtenerTask(HttpServletRequest request) {
@@ -65,31 +65,7 @@ public class TaskServlet extends HttpServlet {
         } catch (Exception ex) {
             Utilidad.enviarError(ex.getMessage(), request, response); // Enviar al jsp de error si hay un Exception.
         }
-    }
-
-    /**
-     * En este método se ejecutara cuando se envie una peticion post, al servlet
-     * Rol , y el parámetro accion sea igual index. Este método se encargara de
-     * enviar los datos de los roles al jsp de index de Rol
-     *
-     * @param request en este parámetro vamos a recibir el request de la
-     * peticion post enviada al servlet Rol
-     * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
-     */
-   
-
-    /**
-     * En este método se ejecutara cuando se envie una peticion get al servlet
-     * Rol, y el parámetro accion sea igual create.
-     *
-     * @param request en este parámetro vamos a recibir el request de la
-     * peticion get enviada al servlet Rol
-     * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
-     */
+    }    
     private void doGetRequestCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // direccionar al jsp create de Rol
         request.getRequestDispatcher("Views/Task/create.jsp").forward(request, response);
@@ -111,8 +87,6 @@ public class TaskServlet extends HttpServlet {
             // Enviar los datos de Rol a la capa de accesoa a datos para que lo almacene en la base de datos el registro.
             int result = TaskDAL.createTask(task);
             if (result != 0) { // Si el result es diferente a cero significa que los datos fueron ingresados correctamente.
-                // Enviar el atributo accion con el valor index al jsp de index
-                request.setAttribute("accion", "index");
                 doGetRequestIndex(request, response); // ir al metodo doGetRequestIndex para que nos direcciones al jsp index
             } else {
                 // Enviar al jsp de error el siguiente mensaje. No se logro registrar un nuevo registro
@@ -123,55 +97,14 @@ public class TaskServlet extends HttpServlet {
             Utilidad.enviarError(ex.getMessage(), request, response);
         }
 
-    }
-
-    /**
-     * En este método obtiene por Id un Rol desde la capa de acceso a datos el
-     * Id se captura del request que se envio al servlet de Rol
-     *
-     * @param request en este parámetro vamos a recibir el request de la
-     * peticion get o post enviada al servlet Rol
-     * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
-     */
-   
-
-    /**
-     * En este método se ejecutara cuando se envie una peticion get al servlet
-     * Rol , y el parámetro accion sea igual edit.
-     *
-     * @param request en este parámetro vamos a recibir el request de la
-     * peticion get enviada al servlet Rol
-     * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
-     */
-    private void doGetRequestComplete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Enviar el rol al jsp de edit que se obtiene por Id
-        
-        // Direccionar al jsp edit de Rol
-        request.getRequestDispatcher("Views/Task/complete.jsp").forward(request, response);
-    }
-
-    /**
-     * En este método se ejecutara cuando se envie una peticion post al servlet
-     * Rol , y el parámetro accion sea igual edit.
-     *
-     * @param request en este parámetro vamos a recibir el request de la
-     * peticion post enviada al servlet Rol
-     * @param response
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
-     */
-    private void doPostRequestComplete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    }   
+    private void doPutRequestComplete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Task task = obtenerTask(request); // Llenar la instancia de Rol con los parámetros enviados en el request.
             // Enviar los datos de Rol a la capa de accesoa a datos para modificar el registro.
             int result = TaskDAL.completeTask(task.getId());
             if (result != 0) { // Si el result es diferente a cero significa que los datos fueron modificado correctamente.
-                // Enviar el atributo accion con el valor index al jsp de index.
-                request.setAttribute("accion", "index");
+                // Enviar el atributo accion con el valor index al jsp de index.              
                 doGetRequestIndex(request, response); // Ir al metodo doGetRequestIndex para que nos direcciones al jsp index.
             } else {
                 // Enviar al jsp de error el siguiente mensaje. No se logro actualizar el registro.
@@ -204,33 +137,7 @@ public class TaskServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Utilizar el método authorize de la clase SessionUser para validar que solo usuario con permiso
-        // puedan acceder al servlet de Rol. Todo el codigo que este dentro  expresion Lambda, se ejecutara si el usuario tiene permitido
-        // acceder a este Servlet 
-        // Obtener el parámetro accion del request
-            String accion = Utilidad.getParameter(request, "accion", "index");
-            // Hacer un switch para decidir a cual metodo ir segun el valor que venga en el parámetro de accion.
-            switch (accion) {
-                case "index":
-                    // Enviar el atributo accion al jsp de index.
-                    request.setAttribute("accion", accion);
-                    doGetRequestIndex(request, response); // Ir al método doGetRequestIndex.
-                    break;
-                case "create":
-                    // Enviar el atributo accion al jsp de create.
-                    request.setAttribute("accion", accion);
-                    doGetRequestCreate(request, response); // Ir al metodo doGetRequestCreate.
-                    break;
-                case "complete":
-                    // Enviar el atributo accion al jsp de edit.
-                    request.setAttribute("accion", accion);
-                    doGetRequestComplete(request, response);// Ir al metodo doGetRequestEdit.
-                    break;              
-                default:
-                    // Enviar el atributo accion al jsp de index.
-                    request.setAttribute("accion", accion);
-                    doGetRequestIndex(request, response); // Ir al metodo doGetRequestIndex.
-            }
+          doGetRequestIndex(request, response); // Ir al método doGetRequestIndex.
     }
 
     /**
@@ -248,28 +155,13 @@ public class TaskServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Utilizar el método authorize de la clase SessionUser para validar que solo usuario con permiso
-        // puedan acceder al servlet de Rol. Todo el codigo que este dentro  expresion Lambda,  se ejecutara si el usuario tiene permitido
-        // acceder a este Servlet 
-         // Obtener el parámetro accion del request.
-            String accion = Utilidad.getParameter(request, "accion", "index");
-            // Hacer un switch para decidir a cual metodo ir segun el valor que venga en el parámetro de accion.
-            switch (accion) {               
-                case "create":
-                    // Enviar el atributo accion al jsp de create.
-                    request.setAttribute("accion", accion);
-                    doPostRequestCreate(request, response); // Ir al metodo doPostRequestCreate.
-                    break;
-                case "complete":
-                    // Enviar el atributo accion al jsp de edit.
-                    request.setAttribute("accion", accion);
-                    doPostRequestComplete(request, response); // Ir al metodo doPostRequestEdit.
-                    break;              
-                default:
-                    // Enviar el atributo accion al jsp de index.
-                    request.setAttribute("accion", accion);
-                    doGetRequestIndex(request, response); // Ir al metodo doGetRequestIndex.
-            }
+          doPostRequestCreate(request, response); // Ir al metodo doPostRequestCreate.
+    }
+    
+     @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+          doPutRequestComplete(request, response); // Ir al metodo doPostRequestCreate.
     }
 
 }

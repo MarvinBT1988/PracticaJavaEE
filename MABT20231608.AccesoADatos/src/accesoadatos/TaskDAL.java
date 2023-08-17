@@ -16,13 +16,12 @@ public class TaskDAL {
 
     public static int createTask(Task task) throws SQLException {
         int result=0;
-        String sql = "INSERT INTO Task (Title, Description, Status, DateCreate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Task (Title, Description, Status, DateCreate, DateComplete) VALUES (?, ?, ?, GETDATE(),  GETDATE() )";
         Connection connection=ComunDB.obtenerConexion();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, task.getTitle());
             statement.setString(2, task.getDescription());
             statement.setString(3, "Pending");
-            statement.setTimestamp(4, new Timestamp(task.getDateCreate().getTime()));
            result= statement.executeUpdate();
         }
         connection.close();
