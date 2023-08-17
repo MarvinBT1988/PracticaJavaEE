@@ -58,7 +58,7 @@ public class TaskServlet extends HttpServlet {
             request.setAttribute("taskPending", tasksPending); // Enviar los roles al jsp utilizando el request.setAttribute con el nombre del atributo roles.
             List<Task> tasksComplete = TaskDAL.getCompleteTasks(); // Ir a la capa de acceso a datos y buscar los registros de Rol.
             // El request.setAttribute se utiliza para enviar datos desde un servlet a un jsp.
-            request.setAttribute("taskComplete", tasksPending);
+            request.setAttribute("taskComplete", tasksComplete);
             // Enviar el Top_aux de Rol al jsp utilizando el request.setAttribute con el nombre del atributo top_aux.          
             // El request.getRequestDispatcher nos permite direccionar a un jsp desde un servlet.              
             request.getRequestDispatcher("Views/Task/index.jsp").forward(request, response); // Direccionar al jsp index de Rol.
@@ -87,7 +87,8 @@ public class TaskServlet extends HttpServlet {
             // Enviar los datos de Rol a la capa de accesoa a datos para que lo almacene en la base de datos el registro.
             int result = TaskDAL.createTask(task);
             if (result != 0) { // Si el result es diferente a cero significa que los datos fueron ingresados correctamente.
-                doGetRequestIndex(request, response); // ir al metodo doGetRequestIndex para que nos direcciones al jsp index
+               request.setAttribute("confirmacion", "La tarea se creo correctamente");                         
+               request.getRequestDispatcher("Views/Task/confirmacion.jsp").forward(request, response);
             } else {
                 // Enviar al jsp de error el siguiente mensaje. No se logro registrar un nuevo registro
                 Utilidad.enviarError("No se logro registrar un nuevo registro", request, response);
@@ -98,14 +99,14 @@ public class TaskServlet extends HttpServlet {
         }
 
     }   
-    private void doPutRequestComplete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void doPostRequestComplete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Task task = obtenerTask(request); // Llenar la instancia de Rol con los parámetros enviados en el request.
             // Enviar los datos de Rol a la capa de accesoa a datos para modificar el registro.
             int result = TaskDAL.completeTask(task.getId());
             if (result != 0) { // Si el result es diferente a cero significa que los datos fueron modificado correctamente.
-                // Enviar el atributo accion con el valor index al jsp de index.              
-                doGetRequestIndex(request, response); // Ir al metodo doGetRequestIndex para que nos direcciones al jsp index.
+               request.setAttribute("confirmacion", "La tarea se cambio a completada correctamente");                         
+               request.getRequestDispatcher("Views/Task/confirmacion.jsp").forward(request, response);
             } else {
                 // Enviar al jsp de error el siguiente mensaje. No se logro actualizar el registro.
                 Utilidad.enviarError("No se logro actualizar el registro", request, response);
@@ -155,13 +156,18 @@ public class TaskServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-          doPostRequestCreate(request, response); // Ir al metodo doPostRequestCreate.
-    }
-    
-     @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-          doPutRequestComplete(request, response); // Ir al metodo doPostRequestCreate.
+          String accion = Utilidad.getParameter(request, "accion", "index");
+            // Hacer un switch para decidir a cual metodo ir segun el valor que venga en el parámetro de accion.
+            switch (accion) {
+                case "create":                   
+                    doPostRequestCreate(request, response); // Ir al metodo doGetRequestCreate.
+                    break;
+                case "complete":                   
+                     doPostRequestComplete(request, response); // Ir al metodo doPostRequestCreate.
+                    break;               
+                default:
+                    doGetRequestIndex(request, response); // Ir al metodo doGetRequestIndex.
+            }
     }
 
 }

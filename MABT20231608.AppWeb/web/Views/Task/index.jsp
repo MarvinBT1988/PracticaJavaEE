@@ -1,9 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="entidades.Task"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <% List<Task> taskPending = (List<Task>) request.getAttribute("taskPending");
     int numPage = 1;
-    int numReg = 10;
+    int numReg = 5;
     int countReg = 0;
     if (taskPending == null) {
         taskPending =  new ArrayList<>();
@@ -14,7 +15,7 @@
 %>
 <% List<Task> taskComplete = (List<Task>) request.getAttribute("taskComplete");
     int numPageComplete = 1;
-    int numRegComplete = 10;
+    int numRegComplete = 5;
     int countRegComplete = 0;
     if (taskComplete == null) {
         taskComplete =  new ArrayList<>();
@@ -33,9 +34,37 @@
         <main class="container">  
             <div class="row">
                 <div class="col l12 s12">
+                    <h5>Crear Tarea</h5>
+                    <form action="Task" method="post">                                   
+                        <div class="row">
+                            <input type="hidden" name="accion" value="create">
+                            <div class="input-field col l3 s12">
+                                <input  id="txtTitle" type="text" name="title" required class="validate" maxlength="50">
+                                <label for="txtTitle">Titulo</label>
+                            </div>   
+                             <div class="input-field col l8 s12">
+                                 <textarea id="taDescription" class="materialize-textarea" value="" name="description">
+                                     
+                                 </textarea>                               
+                                <label for="taDescription">Descripcion</label>
+                            </div>  
+                        </div>
+                        <div class="row">
+                            <div class="col l12 s12">
+                                <button type="sutmit" class="waves-effect waves-light btn blue"><i class="material-icons right">save</i>Guardar</button>                       
+                            </div>
+                        </div>
+                    </form>     
+                </div>
+            </div>
+            <div class="row">
+                <div class="col l12 s12">
                     <div style="overflow: auto">
                         <table class="paginationjs">
                             <thead>
+                                <tr>
+                                    <td style="text-align: center" colspan="5">Tareas Pendientes</td>                                   
+                                </tr>
                                 <tr>
                                     <th>Titulo</th> 
                                     <th>Descripcion</th> 
@@ -60,7 +89,8 @@
                                     <td><%=taskItemPending.getStatus()%></td>  
                                     <td>
                                         <div style="display:flex">
-                                            <form action="Task" method="Put">
+                                            <form action="Task" method="post">
+                                                <input type="hidden" name="accion" value="complete">
                                                 <input type="hidden" name="id" value="<%=taskItemPending.getId()%>">
                                                 <button type="sutmit" class="waves-effect waves-light btn blue"><i class="material-icons right">add</i>Complete</button>
                                             </form>                                                                                                                             
@@ -87,10 +117,13 @@
                         <table class="paginationjs">
                             <thead>
                                 <tr>
+                                    <td style="text-align: center" colspan="5">Tareas Completadas</td>
+                                </tr>
+                                <tr>
                                     <th>Titulo</th> 
                                     <th>Descripcion</th> 
                                     <th>Fecha creacion</th> 
-                                     <th>Fecha completada</th> 
+                                    <th>Fecha completada</th> 
                                     <th>Estatus</th> 
                                 </tr>
                             </thead>                       
@@ -100,10 +133,10 @@
                                         if (numPageComplete > 1) {
                                             countRegComplete++;
                                             double divTempNumPageComplete = (double) countRegComplete / (double) numRegComplete;
-                                            tempNumPageComplete = (int) Math.ceil(divTempNumPagecomplete);
+                                            tempNumPageComplete = (int) Math.ceil(divTempNumPageComplete);
                                         }
                                 %>
-                                <tr data-page="<%= tempNumPageComplete%>">
+                                <tr data-page="<%=tempNumPageComplete%>">
                                     <td><%=taskItemComplete.getTitle()%></td>  
                                     <td><%=taskItemComplete.getDescription()%></td>  
                                     <td><%=taskItemComplete.getDateCreate()%></td>  
